@@ -5,7 +5,9 @@
    [clojure.java.jdbc :as jdbc]
    [honeysql.core :as sql]
    [honeysql.helpers :as helpers :refer :all]
-   [java-time :refer :all :exclude [update contains? iterate range min max zero?]]))
+   [java-time :refer :all
+    ;; :exclude [update contains? iterate range min max zero?]
+    ]))
 
 (def today (sql-date (local-date)))
 
@@ -37,6 +39,9 @@
 
 ;;TODO check that all the types above are correct and re create the table.
 ;; (create-nest-table)
+
+
+
 
 (defn add-nest [entry]
   (jdbc/insert! conn :nests entry))
@@ -136,6 +141,15 @@
 (def select-all-query
   (jdbc/query conn (sql/format  {:select [:*]
                                  :from [:nests]})))
+
+(defn comp-db-q [db species]
+  (jdbc/query db (sql/format {:select [:*]
+                                :from [:nests]
+                                :where [:= :species species]
+                                })))
+
+;; (comp-db-q conn "penguin")
+
 
 (defn insert-entry [address]
   (let [results

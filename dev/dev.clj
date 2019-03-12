@@ -29,11 +29,17 @@
    ;:background-processor (background-processor/new :queue-name "cljtest")
    ;:enqueuer (enqueuer/new :queue-name "cljtest")
    :db (modular.postgres/map->Postgres {:url "jdbc:postgresql:swallows" :user "swallows" :password "swallows"})
-   :pedestal (component/using (pedestal-component/pedestal (constantly coexistence.server/dev-map))
-                              coexistence.service/components-to-inject)))
+   :pedestal (component/using
+              (pedestal-component/pedestal (constantly coexistence.server/dev-map))
+              coexistence.service/components-to-inject)))
 
 (set-init (fn [_]
             (dev-system)))
+
+
+
+
+
 
 (defn refresh []
   (clojure.core/when-let [v (do

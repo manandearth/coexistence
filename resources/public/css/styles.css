@@ -1,0 +1,84 @@
+body {
+    background-color: white;
+    font-family: "Roboto", sans-serif;
+    line-height: 1.25;
+}
+
+#header-links {
+    background-color: cornsilk;
+    padding: 10px;
+}
+
+h1 {
+    color: cornflowerblue;
+}
+
+.justify {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    flex-wrap: wrap;
+    font-family: "Roboto", sans-serif;
+    font-size: 1.5rem;
+}
+
+
+form {
+    width: 80%;
+    margin: 0 auto;
+}
+
+label, input {
+    display: inline-block;
+}
+
+label {
+    width: 30%;
+    text-align: right;
+}
+
+label + input {
+    width: 50%;
+    margin: 0 10% 0 4%;
+}
+
+input + input {
+    float: right;
+}
+    
+    
+
+table {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+}
+table caption {
+    font-size: 1.5em;
+    margin: .5em 0 .75em;
+}
+table tr {
+    border: 1px solid #ddd;
+    padding: .35em;
+}
+table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+table th,
+table td {
+    padding: .625em;
+    text-align: left;
+}
+table th {
+    background: #999;
+    color: #fff;
+    font-size: .85em;
+    letter-spacing: .1em;
+
+}
+table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

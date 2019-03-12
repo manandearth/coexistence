@@ -1,5 +1,6 @@
 (ns coexistence.service
-  (:require [clojure.spec.alpha :as spec]
+  (:require [clojure.core.async :as async :refer [go >!]]
+            [clojure.spec.alpha :as spec]
             [com.grzm.component.pedestal :as pedestal-component]
             [io.pedestal.http :as http]
             [io.pedestal.http.body-params :as body-params]
@@ -12,7 +13,7 @@
             [io.pedestal.http.content-negotiation :as conneg]
             [io.pedestal.test :as test]
             [coexistence.records :as records] ;LOOK HOW TO REMOVE
-            ;; [coexistence.views :as views]
+            [coexistence.views :as views]
             ))
 
 ;; (defn about-page
@@ -28,11 +29,80 @@
 ;;                (clojure-version))
 ;;        ring-resp/response))
 
-(defn home-page [request]
-  (ring-resp/response "Hey World!"))
 
-(defn about-page [request]
-  (ring-resp/response "Eh..excuse me.!"))
+
+(defn extracting-test [{{:keys [temperature orientation]} :query-params :keys [db] :as request}]
+  (str request)
+  )
+
+(extracting-test [12 :east])
+
+
+(defn nests-page
+  [request]
+  (ring-resp/response (views/list-of-entries)))
+
+(defn insert-entry-page
+  [request]
+  (ring-resp/response (views/insert-to-db)))
+
+;; (defn insert-entry-result
+;;   [request]
+;;   (ring-resp/response (views/insert-to-db-results)))
+
+(defn return-params-page
+  [request]
+  (ring-resp/response (views/insert-to-db-results request)))
+
+(defn home-page
+  [request]
+  (ring-resp/response (views/home)))
+
+(defn about-page
+  [request]
+  (ring-resp/response (views/about)))
+
+;; (defn home-page [request]
+;;   (ring-resp/response "Hey World!"))
+
+;; (defn about-page [request]
+;;   (ring-resp/response "Eh..excuse me.!"))
+
+;; FROM SWALLOWS:
+(def supported-types ["text/html" "application/edn" "application/json" "text/plain"])
+
+(def content-neg-intc (conneg/negotiate-content supported-types))
+
+(defn accepted-type
+  [context]
+  (get-in context [:request :accept :field] "text/plain"))
+
+(defn transform-content
+  [body content-type]
+  (case content-type
+    "text/html"  body
+    "text/plain"       body
+    "application/edn"  (pr-str body)
+    "application/json" (json/write-str body)))
+
+
+(defn coerce-to
+  [response content-type]
+  (-> response
+      (update :body transform-content content-type)
+      (assoc-in [:headers "Content-Type"] content-type)))
+
+(def coerce-body
+  {:name ::coerce-body
+   :leave
+   (fn [context]
+     (cond-> context
+       (nil? (get-in context [:response :headers "Content-Type"]))
+       (update-in [:response] coerce-to (accepted-type context))))})
+
+
+
+;FROM VEMV
 
 (spec/def ::temperature int?)
 
@@ -45,6 +115,7 @@
 ;;     (-> enqueuer :channel (>! (coexistence.jobs.sample/new temperature))))
 ;;   {:status 200
 ;;    :body   {:temperature temperature :orientation orientation}})
+
 
 (defn param-spec-interceptor
   "Coerces params according to a spec. If invalid, aborts the interceptor-chain with 422, explaining the issue."
@@ -77,6 +148,7 @@
 
 ;; (def common-interceptors (into component-interceptors [(body-params/body-params) http/html-body]))
 
+;FROM SWALLOWS
 (def common-interceptors [(body-params/body-params) http/html-body])
 
 
@@ -84,6 +156,11 @@
   "Tabular routes"
   #{["/" :get  (conj common-interceptors `home-page)]
     ["/about" :get (conj common-interceptors `about-page)]
+    ["/nests" :get (conj common-interceptors coerce-body content-neg-intc `nests-page)]
+    ["/add-address" :get (conj common-interceptors coerce-body content-neg-intc `insert-entry-page)]
+    ["/add-address" :post  (conj common-interceptors coerce-body content-neg-intc `return-params-page)]
+
+
     ;; ["/api" :get (into component-interceptors [http/json-body (param-spec-interceptor ::api :query-params) `api])]
     ;["/invoices/insert" :get (into component-interceptors [http/json-body (param-spec-interceptor ::invoices.insert/api :query-params) `invoices.insert/perform])]
     ;["/invoices/:id" :get (into component-interceptors [http/json-body (param-spec-interceptor ::invoices.retrieve/api :path-params) `invoices.retrieve/perform])]
