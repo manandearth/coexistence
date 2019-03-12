@@ -1,0 +1,192 @@
+#+TITLE: COEXISTENCE
+#+STARTUP: indent showall
+* project
+** synopsis
+The basic idea is a database for collecting nesting data of swallows
+an api or interface for adding entries to the db and viewing.
+
+** the data and how to arrange it
+in 2018 we had an entry for each address (i.e. "Altozano 7"), now the fields are:
+ 
+| address | GPS         | species       | nests | height | direction-facing      | date |
+|---------+-------------+---------------+-------+--------+-----------------------+------|
+| string  | point (x,y) | swift/swallow | int   | int    | (N/NW/W/SW/S/SE/E/NE) | date |
+|         |             |               |       |        |                       |      |
+|---------+-------------+---------------+-------+--------+-----------------------+------|
+
+What's important is that the table will cover all the cases:
+
+***  all the locations can be described with the address field.
+
+*** the destruction of nests can be recorded other than by substracting dates?
+if we have in a given address 3 nests on jan then 0 on march then 3 in june...
+how can this be best described?
+
+*** gps that stands for more than one address
+is that a problem?
+
+
+
+** ideas
+
+*** GIS
+api for map and nests represented on it using the gps field.
+this can lead to very interesting option of exporting this to another location or have a global app..
+
+*** visaulisations
+should try `Oz` or `Hanami` for `vega-lite`
+
+*** TODO read docs of both libraries
+
+** DATABASE
+
+*** DONE set up a Postgres DB.
+
+#+BEGIN_SRC clojure
+(def db {:dbtype "postgresql"
+         :dbname "swallows"
+         :host "localhost"
+         :user "swallows"
+         :password "swallows"})
+#+END_SRC
+
+
+
+add to project.clj dependencies:
+
+#+BEGIN_SRC clojure
+[org.clojure/java.jdbc "0.7.8"]
+[org.postgresql/postgresql "42.2.5.jre7"]
+[honeysql "0.9.4"]
+#+END_SRC
+
+#+RESULTS:
+: class clojure.lang.Compiler$CompilerExceptionclass clojure.lang.Compiler$CompilerExceptionclass clojure.lang.Compiler$CompilerExceptionclass clojure.lang.Compiler$CompilerExceptionclass clojure.lang.Compiler$CompilerExceptionclass clojure.lang.Compiler$CompilerExceptionCompilerException java.lang.ClassNotFoundException: org.clojure, compiling:(/home/adam/clojure-projects/swallows/src/swallows/views.clj:1:7898) 
+: CompilerException java.lang.ClassNotFoundException: org.postgresql, compiling:(/home/adam/clojure-projects/swallows/src/swallows/views.clj:1:7898) 
+: CompilerException java.lang.RuntimeException: Unable to resolve symbol: honeysql in this context, compiling:(/home/adam/clojure-projects/swallows/src/swallows/views.clj:1:7898) 
+
+*** TODO set postgres to start when computer starts (check pacman)
+
+
+** database-api
+
+/Vemv/
+recomended *honeysql*, so better create a *honeysql* interface.
+
+*** DONE create the honeysql functions to access db.
+
+*** TODO every line in nests page should link to the entry of the nest to edit.
+
+*** TODO add nest page when submitted should load another add-nest page, not only confirmation.
+
+*** TODO filters. views.
+
+*** add new nest:
+**** TODO in *add-new-nest* the nests view updates only when swallows.records ns is refreshed.
+
+**** TODO in *add-new-nest* date needs an easy way to insert
+
+**** TODO in *add-new-nest* drop down menus where applicable
+
+**** DONE add new nest with empty fields
+
+**** DONE lon and lat depend on eachother
+
+**** TODO lon and lat Float parse gives floating point issue (inaccurate... need a decimal)
+
+** integrant
+
+*** TODO add integrant and make it all work...
+
+* starting-up
+
+** DEVELOPMENT
+
+*** server/repl
+
+- start a repl from ns swallows/service using `M-x cider-jack-in` `C-c M-j`
+- start the localhost in the repl with (start-from-repl), this can be stopped with (stop-from-repl) and also has (restart)
+- start browser -> localhost:8080
+
+*** setup - database
+
+**** setting up the postgres db
+
+when I get : server can't start kind of error...:
+
+;;[adam@adam-pc run]$ sudo mkdir postgresql
+;;[adam@adam-pc run]$ sudo chown -R postgres:postgres /var/run/postgresql
+;;[adam@adam-pc run]$ sudo -u postgres -i
+
+;;starting server:
+
+;;[postgres@adam-pc ~]$ pg_ctl -D /user/local/pgsql/data -l logfile start
+;;waiting for server to start.... done
+;;server started
+
+**** PSQL
+start with psql.
+#+BEGIN_SRC sh
+psql -d database -U  user -W
+#also:
+psql
+#+END_SRC
+
+*list* of databases:
+=> \l 
+
+*connect* to a db:
+=> \c some_db
+
+*describe tables*:
+=> \dt
+
+*describe* schemas:
+=> \dn
+
+*describe functions*:
+=> \df
+
+*describe views*:
+=> \dv
+
+*describe users*:
+=> \du
+
+execute previous command:
+=> \g
+
+command history:
+=> \s
+**** create the db
+$ sudo -u postgres createdb swallows
+$ sudo -u postgres psql swallows
+
+or su postgres and then continue without the "sudo -u postgres..." syntax
+
+**** create role
+
+in psql:
+
+swallows=# CREATE ROLE  swallows PASSWORD 'swallows';
+CREATE ROLE
+swallows=# GRANT ALL (PRIVILEGES ?not_sure?) ON DATABASE component_example to swallows;
+GRANT
+
+
+**** login priviliges
+
+If can't login with the new postgresql user
+
+``` 
+ALTER ROLE component_example  WITH LOGIN;
+```
+
+*** pedestal
+
+**** little exercise with /todo verbs feeding and reading from the mock-db 
+
+what then will be the interceptors that will communicate with the postgres db?
+
+post - address,  post all other fields. put to toggle a bool,
+get by address or by any predicate... 
