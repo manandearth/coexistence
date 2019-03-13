@@ -17,23 +17,20 @@
 ;; (clj-time.jdbc )
 
 
-;;LOOK_VEMV the original db connection (prior to component)
 (def conn {:dbtype "postgresql"
            :dbname "swallows"
            :host "localhost"
            :user "swallows"
            :password "swallows"})
-;;LOOK_VEMV the string that JDBC is happy with.
+
 (def dbspec "postgresql://swallows:swallows@localhost:5432/swallows")
 
 
-;;LOOK_VEMV the (certainly unecessary) uri construction machine I wrote to wire the jdbc directly...
 (defn extract-uri [db]
   (let [p db
         p-vec (clojure.string/split (:url p)  #"/")]
     (str (first p-vec) "//" (get p-vec 3) ":" (get p-vec 3) "@" (get p-vec 2) "/" (get p-vec 3) )))
 
-;;LOOK_VEMV a simple function to test the uri.
 (defn comp-db-q [db]
   (let [uri (extract-uri db)]
     (jdbc/query uri (sql/format {:select [:*]
@@ -83,7 +80,6 @@
     (jdbc/insert! conn :nests entry)))
 
 
-;;LOOK_VEMV the basic INSERT with db map extracted with my extract-uri
 (defn insert-nest2!
   [entry-map db]
   (let [entry {:street (:street entry-map)

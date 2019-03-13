@@ -38,8 +38,6 @@
 
 
 
-;;LOOK_VEMV at the moment I need to C-c C-k this ns for every change before (reset)
-
 
 (defn refresh []
   (clojure.core/when-let [v (do
