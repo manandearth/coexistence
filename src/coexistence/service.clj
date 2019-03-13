@@ -58,16 +58,13 @@
   [request]
   (ring-resp/response (views/insert-to-db-results request)))
 
+;;LOOK_VEMV did a few destructuring attempts from your api function 
 (defn return-params-page2
   [{{:keys [db]} :query-params :keys [db params] :as request}]
   (ring-resp/response
    (views/insert-to-db-results2
     {:db db :params params}))
   )
-
-;; (return-params-page2 {:query-params })
-
-
 
 (defn home-page
   [request]
@@ -92,13 +89,6 @@
     (records/comp-db-q {:url url :user user :password password})
     )
   ))
-
-
-;; (defn home-page [request]
-;;   (ring-resp/response "Hey World!"))
-
-;; (defn about-page [request]
-;;   (ring-resp/response "Eh..excuse me.!"))
 
 ;; FROM SWALLOWS:
 (def supported-types ["text/html" "application/edn" "application/json" "text/plain"])
@@ -180,10 +170,7 @@
 
 (def common-interceptors (into component-interceptors [(body-params/body-params) http/html-body]))
 
-;FROM SWALLOWS
-;; (def common-interceptors [(body-params/body-params) http/html-body])
-
-
+;;LOOK_VEMV the routes "/add-address2" :get and :post are the current ones
 (def routes
   "Tabular routes"
   #{["/" :get  (conj common-interceptors `home-page)]
