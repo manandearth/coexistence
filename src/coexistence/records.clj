@@ -7,7 +7,8 @@
    [honeysql.helpers :as helpers :refer :all]
    [java-time :refer :all
     ;; :exclude [update contains? iterate range min max zero?]
-    ]))
+    ]
+   [clojure.string :as string]))
 
 (def today (sql-date (local-date)))
 
@@ -20,6 +21,21 @@
            :host "localhost"
            :user "swallows"
            :password "swallows"})
+
+(def dbspec "postgresql://swallows:swallows@localhost:5432/swallows")
+
+(defn extract-uri [db]
+  (let [p db
+        p-vec (clojure.string/split (:url p)  #"/")]
+    (str (first p-vec) "//" (get p-vec 3) ":" (get p-vec 3) "@" (get p-vec 2) "/" (get p-vec 3) )))
+
+(defn comp-db-q [db]
+  (let [uri (extract-uri db)]
+    (jdbc/query uri (sql/format {:select [:*]
+                                 :from [:nests]
+                                 :where [:= :species "penguin"]
+                                 }))))
+
 
 (defn create-nest-table []
   (jdbc/db-do-commands conn
@@ -61,6 +77,19 @@
                :destroyed_date (:destroyed_date entry-map)}]
     (jdbc/insert! conn :nests entry)))
 
+(defn insert-nest2!
+  [entry-map db]
+  (let [entry {:street (:street entry-map)
+               :number (:number entry-map)
+               :gps (:gps entry-map)
+               :species (:species entry-map)
+               :height (:height entry-map)
+               :facing (:facing entry-map)
+               :type (:type-of entry-map)
+               :date (:date entry-map)
+               :destroyed (:destroyed entry-map)
+               :destroyed_date (:destroyed_date entry-map)}]
+    (jdbc/insert! (extract-uri db) :nests entry)))
 
 ;;HONEYSQL
 
@@ -142,18 +171,17 @@
   (jdbc/query conn (sql/format  {:select [:*]
                                  :from [:nests]})))
 
-(defn comp-db-q [db species]
-  (jdbc/query db (sql/format {:select [:*]
-                                :from [:nests]
-                                :where [:= :species species]
-                                })))
 
-;; (comp-db-q conn "penguin")
+;; (comp-db-q dbspec)
+;; (comp-db-q {:dbname "swallows"
+;;             :url "jdbc:postgresql://swallows@localhost:5432"
+;;             :user "swallows"
+;;             :password "swallows"})
 
 
 (defn insert-entry [address]
   (let [results
-       (jdbc/execute! conn
+        (jdbc/execute! conn
                       (-> (insert-into :nests)
                           (columns :address)
                           (values [[address]])
@@ -161,3 +189,5 @@
                       {:return-keys ["id" "address"]})]
     (assert (= (count results) 2))
     results))
+
+

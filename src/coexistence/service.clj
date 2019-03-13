@@ -35,7 +35,7 @@
   (str request)
   )
 
-(extracting-test [12 :east])
+;; (extracting-test [12 :east])
 
 
 (defn nests-page
@@ -46,6 +46,10 @@
   [request]
   (ring-resp/response (views/insert-to-db)))
 
+(defn insert-entry-page2
+  [request]
+  (ring-resp/response (views/insert-to-db2)))
+
 ;; (defn insert-entry-result
 ;;   [request]
 ;;   (ring-resp/response (views/insert-to-db-results)))
@@ -54,13 +58,41 @@
   [request]
   (ring-resp/response (views/insert-to-db-results request)))
 
+(defn return-params-page2
+  [{{:keys [db]} :query-params :keys [db params] :as request}]
+  (ring-resp/response
+   (views/insert-to-db-results2
+    {:db db :params params}))
+  )
+
+;; (return-params-page2 {:query-params })
+
+
+
 (defn home-page
+  [request]
+  (ring-resp/response (views/home)))
+
+(defn test-home-page
   [request]
   (ring-resp/response (views/home)))
 
 (defn about-page
   [request]
   (ring-resp/response (views/about)))
+
+
+(defn comp-query
+  [{:keys [db] :as context}]
+  (let [url (get-in context [:db :url])
+        user (get-in context [:db :user])
+        password (get-in context [:db :password])
+        temp-url {}]
+    (ring-resp/response  
+    (records/comp-db-q {:url url :user user :password password})
+    )
+  ))
+
 
 ;; (defn home-page [request]
 ;;   (ring-resp/response "Hey World!"))
@@ -82,7 +114,7 @@
   (case content-type
     "text/html"  body
     "text/plain"       body
-    "application/edn"  (pr-str body)
+    c"application/edn"  (pr-str body)
     "application/json" (json/write-str body)))
 
 
@@ -139,17 +171,17 @@
    :name  ::context-injector})
 
 (def components-to-inject [:db
-                           ;:background-processor :enqueuer
+ ;:background-processor :enqueuer
                            ])
 
 (def component-interceptors
   (conj (mapv pedestal-component/using-component components-to-inject)
         (context-injector components-to-inject)))
 
-;; (def common-interceptors (into component-interceptors [(body-params/body-params) http/html-body]))
+(def common-interceptors (into component-interceptors [(body-params/body-params) http/html-body]))
 
 ;FROM SWALLOWS
-(def common-interceptors [(body-params/body-params) http/html-body])
+;; (def common-interceptors [(body-params/body-params) http/html-body])
 
 
 (def routes
@@ -157,10 +189,11 @@
   #{["/" :get  (conj common-interceptors `home-page)]
     ["/about" :get (conj common-interceptors `about-page)]
     ["/nests" :get (conj common-interceptors coerce-body content-neg-intc `nests-page)]
-    ["/add-address" :get (conj common-interceptors coerce-body content-neg-intc `insert-entry-page)]
-    ["/add-address" :post  (conj common-interceptors coerce-body content-neg-intc `return-params-page)]
-
-
+    ["/add-address" :get (conj component-interceptors coerce-body content-neg-intc `insert-entry-page)]
+    ["/add-address" :post  (conj component-interceptors coerce-body content-neg-intc `return-params-page)]
+    ["/comp-query" :get (conj component-interceptors coerce-body content-neg-intc `comp-query)]
+    ["/add-address2" :get (conj common-interceptors coerce-body content-neg-intc `insert-entry-page2)]
+    ["/add-address2" :post  (conj common-interceptors coerce-body content-neg-intc `return-params-page2)]
     ;; ["/api" :get (into component-interceptors [http/json-body (param-spec-interceptor ::api :query-params) `api])]
     ;["/invoices/insert" :get (into component-interceptors [http/json-body (param-spec-interceptor ::invoices.insert/api :query-params) `invoices.insert/perform])]
     ;["/invoices/:id" :get (into component-interceptors [http/json-body (param-spec-interceptor ::invoices.retrieve/api :path-params) `invoices.retrieve/perform])]

@@ -28,7 +28,7 @@
    :service-map coexistence.server/dev-map
    ;:background-processor (background-processor/new :queue-name "cljtest")
    ;:enqueuer (enqueuer/new :queue-name "cljtest")
-   :db (modular.postgres/map->Postgres {:url "jdbc:postgresql:swallows" :user "swallows" :password "swallows"})
+:db (modular.postgres/map->Postgres {:url "postgresql://localhost:5432/swallows" :user "swallows" :password "swallows"})
    :pedestal (component/using
               (pedestal-component/pedestal (constantly coexistence.server/dev-map))
               coexistence.service/components-to-inject)))

@@ -16,7 +16,7 @@
                  [org.clojure/tools.nrepl "0.2.13"]
                  [expound "0.6.0"]
                  [honeysql "0.9.4"]
-                 [org.postgresql/postgresql "42.2.5.jre7"]
+                 ;; [org.postgres␘oql/postgresql "42.2.5.jre7"]
                  [clj-postgresql "0.7.0"]
                  [clojure.java-time "0.3.2"]
                  [hiccup "1.0.5"]
