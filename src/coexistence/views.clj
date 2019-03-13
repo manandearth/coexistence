@@ -79,7 +79,7 @@
        [:p [:label.justify "Destroyed date: " [:input {:type "text" :name "destroyed_date"}]]]
        [:p [:label.justify "λ ->" [:input {:type "submit" :value "Submit"}]]]]]]))
 
-
+;;HERE the :get function
 (defn insert-to-db2 []
   (page/html5
    (gen-page-head "add a nest to the database")
@@ -133,7 +133,7 @@
             :destroyed (if-not (= 0 (count destroyed)) (read-string destroyed) nil)
             :destroyed_date (if-not (= 0 (count destroyed-date)) (sql-date (clj-time.format/parse (clj-time.format/formatters :date)  destroyed-date)) nil)})))
     context))
-
+;HERE passing the db parameters to insert-nest2! which wraps a JDBC INSERT . using (:db context) 
 (defn insert-to-db-results2
   [context]
   (if-let [params (get context :params)]

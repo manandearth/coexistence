@@ -30,7 +30,7 @@
 ;;        ring-resp/response))
 
 
-
+;;HERE understanding how db component can be accessed.. (api func) 
 (defn extracting-test [{{:keys [temperature orientation]} :query-params :keys [db] :as request}]
   (str request)
   )
@@ -46,6 +46,7 @@
   [request]
   (ring-resp/response (views/insert-to-db)))
 
+;HERE the :get response to "/add-nest2"
 (defn insert-entry-page2
   [request]
   (ring-resp/response (views/insert-to-db2)))
@@ -58,12 +59,14 @@
   [request]
   (ring-resp/response (views/insert-to-db-results request)))
 
+
+;;HERE deconstructing the request-map for the db query, only to be able to see it as I still don't know how an interceptor that accesses the db should look like.
+
 (defn return-params-page2
   [{{:keys [db]} :query-params :keys [db params] :as request}]
   (ring-resp/response
    (views/insert-to-db-results2
-    {:db db :params params}))
-  )
+    {:db db :params params})))
 
 (defn home-page
   [request]
@@ -77,7 +80,7 @@
   [request]
   (ring-resp/response (views/about)))
 
-
+;;HERE the simplest "bypass" as a try..
 (defn comp-query
   [{:keys [db] :as context}]
   (let [url (get-in context [:db :url])
@@ -169,6 +172,7 @@
 
 (def common-interceptors (into component-interceptors [(body-params/body-params) http/html-body]))
 
+;;HERE the interesting routes are "/add-address2" :get and :post , that is the base case on which I could build the rest. I just followed the pattern. Need to understand what the interceptors actually do the db instance
 (def routes
   "Tabular routes"
   #{["/" :get  (conj common-interceptors `home-page)]

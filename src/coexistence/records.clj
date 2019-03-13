@@ -16,21 +16,23 @@
 ;; (clojure.java.jdbc)
 ;; (clj-time.jdbc )
 
-
+;HERE db connection before component
 (def conn {:dbtype "postgresql"
            :dbname "swallows"
            :host "localhost"
            :user "swallows"
            :password "swallows"})
 
+;HERE the db uri-connection string that JDBC is happy eith
 (def dbspec "postgresql://swallows:swallows@localhost:5432/swallows")
 
-
+;;HERE (unencessary) make the uri string from request-map since I don't know how to use the PG component yet...
 (defn extract-uri [db]
   (let [p db
         p-vec (clojure.string/split (:url p)  #"/")]
     (str (first p-vec) "//" (get p-vec 3) ":" (get p-vec 3) "@" (get p-vec 2) "/" (get p-vec 3) )))
 
+;;HERE simplest db-query, just to wire regardless of PG component
 (defn comp-db-q [db]
   (let [uri (extract-uri db)]
     (jdbc/query uri (sql/format {:select [:*]
@@ -79,7 +81,7 @@
                :destroyed_date (:destroyed_date entry-map)}]
     (jdbc/insert! conn :nests entry)))
 
-
+;;Here the JDBC query that will use the PG component
 (defn insert-nest2!
   [entry-map db]
   (let [entry {:street (:street entry-map)

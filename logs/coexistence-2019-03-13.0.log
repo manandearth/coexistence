@@ -5754,3 +5754,16 @@ Caused by: org.postgresql.util.PSQLException: This ResultSet is closed.
 	at io.pedestal.interceptor$eval700$fn__701$fn__702.invoke(interceptor.clj:41)
 	at io.pedestal.interceptor.chain$try_f.invokeStatic(chain.clj:54)
 	... 39 common frames omitted
+13:36:46.861 [MLog-Init-Reporter] INFO  com.mchange.v2.log.MLog - MLog clients using slf4j logging.
+13:36:46.892 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  com.mchange.v2.c3p0.C3P0Registry - Initializing c3p0-0.9.5.2 [built 08-December-2015 22:06:04 -0800; debug? true; trace: 10]
+13:36:46.964 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  org.eclipse.jetty.util.log - Logging initialized @27006ms to org.eclipse.jetty.util.log.Slf4jLog
+13:36:47.094 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  org.eclipse.jetty.server.Server - jetty-9.4.0.v20161208
+13:36:47.118 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@4cb0e9c6{/,null,AVAILABLE}
+13:36:47.126 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@301ca74{HTTP/1.1,[http/1.1, h2c]}{0.0.0.0:8080}
+13:36:47.126 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  org.eclipse.jetty.server.Server - Started @27169ms
+13:36:48.467 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@301ca74{HTTP/1.1,[http/1.1, h2c]}{0.0.0.0:8080}
+13:36:48.469 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@4cb0e9c6{/,null,UNAVAILABLE}
+13:36:48.497 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  org.eclipse.jetty.server.Server - jetty-9.4.0.v20161208
+13:36:48.533 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@68378be7{/,null,AVAILABLE}
+13:36:48.534 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@7c14e9ae{HTTP/1.1,[http/1.1, h2c]}{0.0.0.0:8080}
+13:36:48.534 [nRepl-session-0be4c833-7258-4cc0-96f2-c2e01c608ed2] INFO  org.eclipse.jetty.server.Server - Started @28577ms
